@@ -29,10 +29,10 @@ const Header = () => {
           <div className="flex-shrink-0 mr-5">
             <a href="/">
               <Image
-                src="/images/logo-enbed.png"
+                src="/images/logo-enbuy.png"
                 height="40"
                 width="120"
-                alt="BuyItNow"
+                alt="EnBuy"
               />
             </a>
           </div>
