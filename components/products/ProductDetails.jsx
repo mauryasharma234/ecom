@@ -41,13 +41,16 @@ const insuranceData = [
 ]
 
 const ProductDetails = ({ product }) => {
-  const { addItemToCart } = useContext(CartContext);
+  const { addItemToCart, deleteItemFromCart, cart } = useContext(CartContext);
   const { canUserReview, canReview } = useContext(OrderContext);
   const imgRef = useRef(null);
 
   const setImgPreview = (url) => {
     imgRef.current.src = url;
   };
+  useEffect(() => {
+    console.log("Maurya length", cart?.cartItems?.length);
+  }, [cart])
 
   useEffect(() => {
     canUserReview(product?._id);
