@@ -12,7 +12,7 @@ data = [{
     name: "Gadget Insurance",
     startingFromPrice: '2000',
     source: {
-        name: 'abc',
+        name: 'Ensuredit Technologies Pvt. Ltd.',
         logo: ''
     },
     benefits: [{
