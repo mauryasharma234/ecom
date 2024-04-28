@@ -6,6 +6,8 @@ import Link from "next/link";
 import React, { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import BreadCrumbs from "../layouts/BreadCrumbs";
+import Modal from "../insurance/Modal";
+import ProposalForm from "../insurance/ProposalForm";
 
 const Shipping = ({ addresses }) => {
   const { cart } = useContext(CartContext);
@@ -17,23 +19,25 @@ const Shipping = ({ addresses }) => {
   };
 
   const checkoutHandler = async () => {
-    if (!shippingInfo) {
-      return toast.error("Please select your shipping address");
-    }
-    // move to stripe checkoutpage
-    try {
-      const { data } = await axios.post(
-        `${process.env.API_URL}/api/orders/checkout_session`,
-        {
-          items: cart?.cartItems,
-          shippingInfo,
-        }
-      );
 
-      window.location.href = data.url;
-    } catch (error) {
-      console.log(error.response);
-    }
+    // if (!shippingInfo) {
+    //   return toast.error("Please select your shipping address");
+    // }
+    // // move to stripe checkoutpage
+    // try {
+    //   const { data } = await axios.post(
+    //     `${process.env.API_URL}/api/orders/checkout_session`,
+    //     {
+    //       items: cart?.cartItems,
+    //       shippingInfo,
+    //     }
+    //   );
+
+    //   window.location.href = data.url;
+    // } catch (error) {
+    //   console.log(error.response);
+    // }
+    toggleModal();
   };
 
   const breadCrumbs = [
@@ -41,7 +45,11 @@ const Shipping = ({ addresses }) => {
     { name: "Cart", url: "/cart" },
     { name: "Order", url: "" },
   ];
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
   return (
     <div>
       <BreadCrumbs breadCrumbs={breadCrumbs} />
@@ -51,6 +59,9 @@ const Shipping = ({ addresses }) => {
             <main className="md:w-2/3">
               <article className="border border-gray-200 bg-white shadow-sm rounded p-4 lg:p-6 mb-5">
                 <h2 class="text-xl font-semibold mb-5">Shipping information</h2>
+                {isModalOpen && (
+                  <Modal toggleModal={toggleModal}/>
+                )}
 
                 <div class="grid sm:grid-cols-2 gap-4 mb-6">
                   {addresses?.map((address) => (
@@ -94,7 +105,7 @@ const Shipping = ({ addresses }) => {
                     Back
                   </Link>
                   <a
-                    className="px-5 py-2 inline-block text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 cursor-pointer"
+                    className="px-5 py-2 inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 cursor-pointer"
                     onClick={checkoutHandler}
                   >
                     Checkout
@@ -125,6 +136,7 @@ const Shipping = ({ addresses }) => {
                 <hr className="my-4" />
 
                 <h2 class="text-lg font-semibold mb-3">Items in cart</h2>
+                
 
                 {cart?.cartItems?.map((item) => (
                   <figure class="flex items-center mb-4 leading-5">
