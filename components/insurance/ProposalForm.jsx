@@ -55,7 +55,7 @@ const ProposalForm = () => {
       body: JSON.stringify({ username: 'nitigya', password: 'test' }),
     });
     const dataAuth = await responseAuth.json();
-    console.log(dataAuth);
+    console.log("tanmay", dataAuth);
 
 
     const response = await fetch('https://api-predev.ensuredit.com/enbed/v1/policy-stores', {
@@ -67,7 +67,7 @@ const ProposalForm = () => {
       body: JSON.stringify({ product_id: cart?.cartItems[0].product, proposal_form: updatedUserInfo })
     });
     const data = await response.json();
-
+    console.log("data ", data)
     //call api to buy 
     const responseBuy = await fetch('https://api-predev.ensuredit.com/enbed/v1/products/buy/client', {
       method: 'POST',
@@ -78,8 +78,24 @@ const ProposalForm = () => {
       body: JSON.stringify({ policy_id: data.id })
     });
     const dataBuy = await responseBuy.json();
-    console.log(dataBuy);
-    
+    console.log("here", dataBuy);
+
+    const downloadBuy = await fetch('https://api-predev.ensuredit.com/enbed/v1/policy-stores/' + data.id + '/certificate:download', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + dataAuth["accessToken"]
+      }
+    });
+    const dataDownload = await downloadBuy.json();
+
+    console.log("dataDownload", dataDownload);
+    const pdfUrl = dataDownload.url;
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.target = "_blank"
+    link.download = 'write_up_doc.pdf';
+    link.click();
     router.push('/success');
   };
   return (
