@@ -20,63 +20,93 @@ const ProposalForm = () => {
         PERSON_1_EMAIL_ID: "",
         START_DATE: "",
     })
-
+    const formatDateToJan4Format = (dateString) => {
+      const date = new Date(dateString);
+      const options = { month: 'short', day: 'numeric', year: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+  };
     const onChange = (e) => {
+        if(e.target.name === "START_DATE" || e.target.name === "PERSON_1_DOB"){
+
+        }
+          
         setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
       };
-      const submitHandler = (e) => {
-        e.preventDefault();
     
-        console.log(userInfo);
-        console.log("cartlenght", cart?.cartItems?.length);
+      const submitHandler = async (e) => {
+        e.preventDefault();
+        const formattedStartDate = formatDateToJan4Format(userInfo.START_DATE);
+    const formattedDOB = formatDateToJan4Format(userInfo.PERSON_1_DOB);
+    const updatedUserInfo = {
+      ...userInfo,
+      START_DATE: formattedStartDate,
+      PERSON_1_DOB: formattedDOB,
+  };
+        console.log(updatedUserInfo.START_DATE);
+        console.log("cart length maurya", cart?.cartItems?.length);
+        console.log("one cart item maurya", cart?.cartItems[0].product);
+        const responseAuth = await fetch('https://api-predev.ensuredit.com/enbed/v1/auth/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: 'nitigya', password: 'test' }),
+      });
+      const dataAuth = await responseAuth.json();
+      console.log(dataAuth);
+
+
+      const response = await fetch('https://api-predev.ensuredit.com/enbed/v1/policy-stores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + dataAuth["accessToken"]
+        },
+        body: JSON.stringify({ product_id: cart?.cartItems[0].product, proposal_form: updatedUserInfo })
+      });
+      const data = await response.json();
+
+      //call api to buy 
+      const responseBuy = await fetch('https://api-predev.ensuredit.com/enbed/v1/products/buy/client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + dataAuth["accessToken"]
+        },
+        body: JSON.stringify({ policy_id : data.id})
+      });
+      const dataBuy = await responseBuy.json();
+      console.log(dataBuy);
       };
     return(
-        <section className="container max-w-3xl p-6 mx-auto">
-        <h1 className="mb-3 text-xl md:text-3xl font-semibold text-black mb-8">
+        <section className="container max-w-3xl mx-auto">
+        <h1 className="mb-3 text-xl md:text-3xl font-semibold text-black">
           Fill Your Details
         </h1>
   
         <form onSubmit={submitHandler}>
           <div className="grid md:grid-cols-2 gap-x-2 mt-5">
             <div className="mb-4">
-              <label className="block mb-1"> No of Persons </label>
+              <label className="block mb-1"> First Name </label>
               <input
                 type="text"
                 className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                placeholder="No of Persons"
-                name="NO_OF_PERSON"
-                value={userInfo.NO_OF_PERSON}
+                placeholder="First Name"
+                name="PERSON_1_FIRST_NAME"
+                value={userInfo.PERSON_1_FIRST_NAME}
                 onChange={onChange}
                 required
               />
             </div>
   
             <div className="mb-4">
-              <label className="block mb-1"> Person 1 First Name </label>
+              <label className="block mb-1">Last Name </label>
               <div className="relative">
                 <div className="col-span-2">
                   <input
                     type="text"
                     className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                    placeholder="Person 1 First Name"
-                    name="PERSON_1_FIRST_NAME"
-                    value={userInfo.PERSON_1_FIRST_NAME}
-                    onChange={onChange}
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-x-2 mt-5">
-            <div className="mb-4">
-              <label className="block mb-1"> Person 1 Last Name </label>
-              <div className="relative">
-                <div className="col-span-2">
-                  <input
-                    type="text"
-                    className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                    placeholder="Person 1 Last Name"
+                    placeholder="Last Name"
                     name="PERSON_1_LAST_NAME"
                     value={userInfo.PERSON_1_LAST_NAME}
                     onChange={onChange}
@@ -85,13 +115,32 @@ const ProposalForm = () => {
                 </div>
               </div>
             </div>
+          </div>
+           
+          <div className="grid md:grid-cols-2 gap-x-2 mt-5">
             <div className="mb-4">
-              <label className="block mb-1"> Person 1 DOB </label>
+              <label className="block mb-1">Start Date</label>
+              <div className="relative">
+                <div className="col-span-2">
+                  <input
+                    type="date"
+                    className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                    placeholder="Start Date"
+                    name="START_DATE"
+                    value={userInfo.START_DATE}
+                    onChange={onChange}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-1">Date of Birth </label>
               <div className="relative">
               <input
                     type="date"
                     className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                    placeholder="Person 1 DOB"
+                    placeholder="DOB"
                     name="PERSON_1_DOB"
                     value={userInfo.PERSON_1_DOB}
                     onChange={onChange}
@@ -103,7 +152,7 @@ const ProposalForm = () => {
   
           <div className="grid md:grid-cols-2 gap-x-2 mt-5">
             <div className="mb-4">
-              <label className="block mb-1"> Person 1 Gender </label>
+              <label className="block mb-1"> Gender </label>
                         <select
                             className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                             name="PERSON_1_GENDER"
@@ -119,13 +168,13 @@ const ProposalForm = () => {
             </div>
   
             <div className="mb-4">
-              <label className="block mb-1"> Person 1 Address Line 1 </label>
+              <label className="block mb-1"> Address</label>
               <div className="relative">
                 <div className="col-span-2">
                   <input
                     type="text"
                     className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                    placeholder="Person 1 Address Line 1"
+                    placeholder="Address"
                     name="PERSON_1_ADDRESS_LINE_1"
                     value={userInfo.PERSON_1_ADDRESS_LINE_1}
                     onChange={onChange}
@@ -137,11 +186,11 @@ const ProposalForm = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-x-2 mt-5">
             <div className="mb-4">
-              <label className="block mb-1"> Person 1 Pincode </label>
+              <label className="block mb-1"> Pincode </label>
               <input
                 type="text"
                 className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                placeholder="Person 1 Pincode"
+                placeholder="Pincode"
                 name="PERSON_1_PINCODE"
                 value={userInfo.PERSON_1_PINCODE}
                 onChange={onChange}
@@ -150,13 +199,13 @@ const ProposalForm = () => {
             </div>
   
             <div className="mb-4">
-              <label className="block mb-1"> Person 1 City </label>
+              <label className="block mb-1"> City </label>
               <div className="relative">
                 <div className="col-span-2">
                   <input
                     type="text"
                     className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                    placeholder="Person 1 City"
+                    placeholder="City"
                     name="PERSON_1_CITY"
                     value={userInfo.PERSON_1_CITY}
                     onChange={onChange}
@@ -168,11 +217,11 @@ const ProposalForm = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-x-2 mt-5">
             <div className="mb-4">
-              <label className="block mb-1"> Person 1 Mobile Number </label>
+              <label className="block mb-1"> Mobile Number </label>
               <input
                 type="text"
                 className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                placeholder="Person 1 Mobile Number"
+                placeholder="Mobile Number"
                 name="PERSON_1_MOBILE_NUMBER"
                 value={userInfo.PERSON_1_MOBILE_NUMBER}
                 onChange={onChange}
@@ -181,13 +230,13 @@ const ProposalForm = () => {
             </div>
   
             <div className="mb-4">
-              <label className="block mb-1"> Person 1 Email </label>
+              <label className="block mb-1"> Email </label>
               <div className="relative">
                 <div className="col-span-2">
                   <input
                     type="text"
                     className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                    placeholder="Person 1 Email"
+                    placeholder="Email"
                     name="PERSON_1_EMAIL_ID"
                     value={userInfo.PERSON_1_EMAIL_ID}
                     onChange={onChange}
@@ -195,20 +244,6 @@ const ProposalForm = () => {
                   />
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-x-2 mt-5">
-            <div className="mb-4">
-              <label className="block mb-1"> Start Date </label>
-              <input
-                type="date"
-                className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                placeholder="Start Date"
-                name="START_DATE"
-                value={userInfo.START_DATE}
-                onChange={onChange}
-                required
-              />
             </div>
           </div>
   

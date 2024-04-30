@@ -10,7 +10,7 @@ import Reviews from "../review/Reviews";
 import InsuranceProductItem from "./InsuranceProductItem";
 const insuranceData = [
   {
-  id: 1,
+  id: 'a60e1d00-3d68-4349-bb5a-46353a8df886',
   name: "Gadget Insurance",
   startingFromPrice: '2000',
   source: {
