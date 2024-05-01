@@ -40,11 +40,78 @@ import InsuranceProductItem from "./InsuranceProductItem";
 
 // ]
 
+const insuranceData = [
+  {
+      "id": "b3466ede-6041-4538-9ed9-96e098aa992d",
+      "name": "Fracture Protect",
+      "source": {
+          "id": "9b17f9bc-b47c-4517-b347-556102e3721a",
+          "name": "Digit Insurance",
+          "logo": "https://eit-enbed-public-uat.s3.ap-south-1.amazonaws.com/SOURCES/9b17f9bc-b47c-4517-b347-556102e3721a/logo.png",
+          "entity": "",
+          "updatedAt": null
+      },
+      "startingFromPrice": 250,
+      "paymentMethods": "{}",
+      "benefits": [
+          {
+              "id": "564bd9a1-6a6f-4ffb-837f-b009ce08dccc",
+              "benefit": "FractureCare Assurance",
+              "description": "Safeguard yourself against unexpected leg fractures with our specialized coverage. Stay worry-free with coverage for medical expenses, rehabilitation costs, and loss of income benefits, up to Rs. 7,500 for any accidental leg fracture.",
+              "included": true
+          },
+          {
+              "id": "bca7cdac-5a11-4648-ae54-674ac0a053aa",
+              "benefit": "LegSafe Protection Plan",
+              "description": "Ensure your financial security in the event of a leg fracture with our comprehensive protection plan. Enjoy coverage for medical expenses, surgery costs, and disability benefits, up to Rs. 10,000, ensuring your financial stability during recovery.",
+              "included": true
+          }
+      ],
+      "duration": -1,
+      "category": "Fracture Protect",
+      "price": 250,
+      "masterProductId": ""
+  },
+  {
+    "id": "e20c74f5-6d33-44d8-98e9-2b8ddc2780ae",
+    "name": "Extended Warranty",
+    "source": {
+        "id": "9b17f9bc-b47c-4517-b347-556102e3721a",
+        "name": "Digit Insurance",
+        "logo": "https://eit-enbed-public-uat.s3.ap-south-1.amazonaws.com/SOURCES/9b17f9bc-b47c-4517-b347-556102e3721a/logo.png",
+        "entity": "",
+        "updatedAt": null
+    },
+    "startingFromPrice": 500,
+
+    "paymentMethods": "{}",
+    "benefits": [
+        {
+            "id": "fcf80536-491b-422a-bbf0-61e0b183695e",
+            "benefit": "Extended Warranty Plus",
+            "description": "Extend the warranty on your gadgets for an additional year beyond the manufacturer's warranty period. Enjoy peace of mind with coverage for mechanical and electrical breakdowns, with repair or replacement costs covered up to $200.",
+            "included": true
+        },
+        {
+            "id": "966cedcd-3c98-4905-b93d-e8ce3b7a6ebe",
+            "benefit": "DeviceGuard Extended",
+            "description": "Extend the warranty on your devices to safeguard against unexpected malfunctions. Enjoy comprehensive coverage for up to three additional years, with repair or replacement costs covered up to Rs. 500, ensuring your gadgets stay protected for longer.",
+            "included": true
+        }
+    ],
+
+    "duration": 3,
+    "category": "Extended Warranty",
+    "masterProductId": ""
+}
+];
+
 const ProductDetails = ({ product }) => {
   const { addItemToCart, deleteItemFromCart, cart } = useContext(CartContext);
   const { canUserReview, canReview } = useContext(OrderContext);
   const imgRef = useRef(null);
-  const [insuranceData, setInsuranceData] = useState([]);
+  // const [insuranceData, setInsuranceData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const setImgPreview = (url) => {
     imgRef.current.src = url;
@@ -56,10 +123,15 @@ const ProductDetails = ({ product }) => {
   useEffect(() => {
     canUserReview(product?._id);
   }, []);
-
   useEffect(() => {
-    fetchInsuranceData();
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
   }, [])
+
+  // useEffect(() => {
+  //   fetchInsuranceData();
+  // }, [])
 
   const fetchInsuranceData = async () => {
     const responseAuth = await fetch('https://api-uat.ensuredit.com/enbed/v1/auth/generate', {
@@ -100,6 +172,7 @@ const ProductDetails = ({ product }) => {
       console.log(data, "data");
       
       setInsuranceData(data.products);
+      setLoading(false);
       console.log("insurnce data ", insuranceData);
   }
   const inStock = product?.stock >= 1;
@@ -127,6 +200,7 @@ const ProductDetails = ({ product }) => {
       <BreadCrumbs breadCrumbs={breadCrumbs} />
       <section className="bg-white py-10">
         <div className="container max-w-screen-xl mx-auto px-4">
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-5">
             <aside>
               <div className="border border-gray-200 shadow-sm p-3 text-center rounded mb-5">
@@ -234,14 +308,24 @@ const ProductDetails = ({ product }) => {
          
           <div className="font-semibold">
             <h1 className="text-gray-500 review-title mb-6 mt-10 text-2xl">
-              You might Also like
+              You may also like
             </h1>
             
           </div>
-          {insuranceData.map((insuranceProduct) => (
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-4 border-blue-900"></div>
+            </div>
+          ) : (
+            <div>
+              {/* Product details */}
+              {insuranceData?.map((insuranceProduct) => (
             <InsuranceProductItem product={insuranceProduct} />
           ))
             }
+            </div>
+          )}
+          
           {/* <InsuranceProductItem product={insuranceData}/> */}
           {/* <div className="font-semibold">
             <h1 className="text-gray-500 review-title mb-6 mt-10 text-2xl">

@@ -178,6 +178,7 @@ import Link from "next/link";
 import StarRatings from "react-star-ratings";
 import Image from "next/image";
 import CartContext from "@/context/CartContext";
+import Accordion from "../insurance/Accordion";
 
 const InsuranceProductItem = ({ product }) => {
   const { addItemToCart, deleteItemFromCart, cart } = useContext(CartContext);
@@ -203,7 +204,7 @@ const InsuranceProductItem = ({ product }) => {
   };
 
   return (
-    <article className="border border-gray-200 overflow-hidden bg-white shadow-sm rounded mb-5">
+    <article className="overflow-hidden bg-white shadow-md rounded mb-5">
       <div className="flex flex-col md:flex-row">
         <div className="md:w-1/4 flex p-3">
           <div
@@ -228,7 +229,7 @@ const InsuranceProductItem = ({ product }) => {
         <div className="md:w-2/4">
           <div className="p-4">{product.name}</div>
         </div>
-        <div className="md:w-2/4">
+        {/* <div className="md:w-2/4">
           <div className="p-4">
             {product.benefits.map((benefit) => (
               <div key={benefit.id}>
@@ -239,7 +240,15 @@ const InsuranceProductItem = ({ product }) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
+        <div className="md:w-2/4">
+      <div className="p-4">
+        {/* {product.benefits.map((benefit) => (
+          <Accordion key={benefit.id} benefit={benefit} />
+        ))} */}
+        <Accordion benefits = {product.benefits} />
+      </div>
+    </div>
 
         <div className="md:w-1/4 border-t lg:border-t-0 lg:border-l border-gray-200">
           <div className="p-5">

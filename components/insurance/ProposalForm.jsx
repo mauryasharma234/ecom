@@ -3,7 +3,8 @@
 import React, { useContext, useState } from "react";
 import CartContext from "@/context/CartContext";
 import { useRouter } from "next/navigation";
-
+import download from "downloadjs";
+import axios from "axios";
 
 const ProposalForm = () => {
   // const cart = useContext(CartContext);
@@ -15,11 +16,11 @@ const ProposalForm = () => {
     PERSON_1_LAST_NAME: "",
     PERSON_1_DOB: "",
     PERSON_1_GENDER: "",
-    PERSON_1_ADDRESS_LINE_1: "",
-    PERSON_1_PINCODE: "",
-    PERSON_1_CITY: "",
-    PERSON_1_MOBILE_NUMBER: "",
-    PERSON_1_EMAIL_ID: "",
+    ADDRESS_LINE_1: "",
+    PINCODE: "",
+    CITY: "",
+    MOBILE_NUMBER: "",
+    EMAIL: "",
     START_DATE: "",
   })
   const formatDateToJan4Format = (dateString) => {
@@ -34,6 +35,14 @@ const ProposalForm = () => {
 
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
   };
+  const handleDownloadLink = async (pdfLinks) => {
+    for (let index = 0; index < pdfLinks.length; index++) {
+      const pdfUrl = pdfLinks[index];
+      const response = await axios.get(pdfUrl, { responseType: 'blob' });
+      download(response.data, `write_up_doc_${index + 1}.pdf`);
+    }
+  }
+  let policy_urls = [];
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -47,18 +56,18 @@ const ProposalForm = () => {
     console.log(updatedUserInfo.START_DATE);
     console.log("cart length maurya", cart?.cartItems?.length);
     console.log("one cart item maurya", cart?.cartItems[0].product);
-    const responseAuth = await fetch('https://api-predev.ensuredit.com/enbed/v1/auth/generate', {
+    const responseAuth = await fetch('https://api-uat.ensuredit.com/enbed/v1/auth/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username: 'nitigya', password: 'test' }),
+      body: JSON.stringify({ username: 'ecommerce', password: '12345' }),
     });
     const dataAuth = await responseAuth.json();
     console.log("tanmay", dataAuth);
 
-
-    const response = await fetch('https://api-predev.ensuredit.com/enbed/v1/policy-stores', {
+    for (let i = 0; i < cart?.cartItems?.length; i++) {
+    const response = await fetch('https://api-uat.ensuredit.com/enbed/v1/policy-stores', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -68,8 +77,11 @@ const ProposalForm = () => {
     });
     const data = await response.json();
     console.log("data ", data)
+    // policy_ids.push(data.id);
+  
     //call api to buy 
-    const responseBuy = await fetch('https://api-predev.ensuredit.com/enbed/v1/products/buy/client', {
+
+    const responseBuy = await fetch('https://api-uat.ensuredit.com/enbed/v1/products/buy/client', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -79,8 +91,8 @@ const ProposalForm = () => {
     });
     const dataBuy = await responseBuy.json();
     console.log("here", dataBuy);
-
-    const downloadBuy = await fetch('https://api-predev.ensuredit.com/enbed/v1/policy-stores/' + data.id + '/certificate:download', {
+  
+    const downloadBuy = await fetch('https://api-uat.ensuredit.com/enbed/v1/policy-stores/' + data.id + '/certificate:download', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -90,12 +102,21 @@ const ProposalForm = () => {
     const dataDownload = await downloadBuy.json();
 
     console.log("dataDownload", dataDownload);
-    const pdfUrl = dataDownload.url;
-    const link = document.createElement('a');
-    link.href = pdfUrl;
-    link.target = "_blank"
-    link.download = 'write_up_doc.pdf';
-    link.click();
+
+    policy_urls.push(dataDownload.url);
+
+  }
+   
+    handleDownloadLink(policy_urls);
+
+    // const pdfUrl = dataDownload.url;
+    // const link = document.createElement('a');
+    // link.href = pdfUrl;
+    // link.target = "_blank"
+    // link.download = 'write_up_doc.pdf';
+    // link.click();
+
+
     router.push('/success');
   };
   return (
@@ -195,8 +216,8 @@ const ProposalForm = () => {
                   type="text"
                   className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                   placeholder="Address"
-                  name="PERSON_1_ADDRESS_LINE_1"
-                  value={userInfo.PERSON_1_ADDRESS_LINE_1}
+                  name="ADDRESS_LINE_1"
+                  value={userInfo.ADDRESS_LINE_1}
                   onChange={onChange}
                   required
                 />
@@ -211,8 +232,8 @@ const ProposalForm = () => {
               type="text"
               className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
               placeholder="Pincode"
-              name="PERSON_1_PINCODE"
-              value={userInfo.PERSON_1_PINCODE}
+              name="PINCODE"
+              value={userInfo.PINCODE}
               onChange={onChange}
               required
             />
@@ -226,8 +247,8 @@ const ProposalForm = () => {
                   type="text"
                   className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                   placeholder="City"
-                  name="PERSON_1_CITY"
-                  value={userInfo.PERSON_1_CITY}
+                  name="CITY"
+                  value={userInfo.CITY}
                   onChange={onChange}
                   required
                 />
@@ -242,8 +263,8 @@ const ProposalForm = () => {
               type="text"
               className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
               placeholder="Mobile Number"
-              name="PERSON_1_MOBILE_NUMBER"
-              value={userInfo.PERSON_1_MOBILE_NUMBER}
+              name="MOBILE_NUMBER"
+              value={userInfo.MOBILE_NUMBER}
               onChange={onChange}
               required
             />
@@ -257,8 +278,8 @@ const ProposalForm = () => {
                   type="text"
                   className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                   placeholder="Email"
-                  name="PERSON_1_EMAIL_ID"
-                  value={userInfo.PERSON_1_EMAIL_ID}
+                  name="EMAIL"
+                  value={userInfo.EMAIL}
                   onChange={onChange}
                   required
                 />
