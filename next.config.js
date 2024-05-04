@@ -5,7 +5,7 @@ const nextConfig = {
   },
   env: {
     API_URL: "http://localhost:3000",
-    DB_URI: "mongodb://host.docker.internal:27017/buyitnow",
+    DB_URI: "mongodb://localhost:27017/buyitnow",
 
     CLOUD_NAME: "dmzvvpjej",
     CLOUDINARY_API_KEY: "771393276322984",
