@@ -67,46 +67,51 @@ const ProposalForm = () => {
     console.log("tanmay", dataAuth);
 
     for (let i = 0; i < cart?.cartItems?.length; i++) {
-    const response = await fetch('https://api-uat.ensuredit.com/enbed/v1/policy-stores', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + dataAuth["accessToken"]
-      },
-      body: JSON.stringify({ product_id: cart?.cartItems[0].product, proposal_form: updatedUserInfo })
-    });
-    const data = await response.json();
-    console.log("data ", data)
-    // policy_ids.push(data.id);
-  
-    //call api to buy 
+      console.log("cart item maurya sharma", cart?.cartItems[i]);
+      // console.log("cart item maurya sharma seller", cart?.cartItems[i].product.seller);
+      if (cart?.cartItems[i].seller == "Ensuredit Technologies") {
+        const response = await fetch('https://api-uat.ensuredit.com/enbed/v1/policy-stores', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + dataAuth["accessToken"]
+          },
+          body: JSON.stringify({ product_id: cart?.cartItems[i].product, proposal_form: updatedUserInfo })
+        });
+        const data = await response.json();
+        console.log("data ", data)
+        // policy_ids.push(data.id);
 
-    const responseBuy = await fetch('https://api-uat.ensuredit.com/enbed/v1/products/buy/client', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + dataAuth["accessToken"]
-      },
-      body: JSON.stringify({ policy_id: data.id })
-    });
-    const dataBuy = await responseBuy.json();
-    console.log("here", dataBuy);
-  
-    const downloadBuy = await fetch('https://api-uat.ensuredit.com/enbed/v1/policy-stores/' + data.id + '/certificate:download', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + dataAuth["accessToken"]
+        //call api to buy 
+
+        const responseBuy = await fetch('https://api-uat.ensuredit.com/enbed/v1/products/buy/client', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + dataAuth["accessToken"]
+          },
+          body: JSON.stringify({ policy_id: data.id })
+        });
+        const dataBuy = await responseBuy.json();
+        console.log("here", dataBuy);
+
+        const downloadBuy = await fetch('https://api-uat.ensuredit.com/enbed/v1/policy-stores/' + data.id + '/certificate:download', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + dataAuth["accessToken"]
+          }
+        });
+        const dataDownload = await downloadBuy.json();
+
+        console.log("dataDownload", dataDownload);
+
+        policy_urls.push(dataDownload.url);
       }
-    });
-    const dataDownload = await downloadBuy.json();
 
-    console.log("dataDownload", dataDownload);
 
-    policy_urls.push(dataDownload.url);
+    }
 
-  }
-   
     handleDownloadLink(policy_urls);
 
     // const pdfUrl = dataDownload.url;

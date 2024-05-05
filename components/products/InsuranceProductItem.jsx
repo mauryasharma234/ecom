@@ -198,7 +198,8 @@ const InsuranceProductItem = ({ product }) => {
         name: product.name,
         price: product.startingFromPrice,
         image: product.source.logo,
-        seller: product.source.name,
+        // seller: product.source.name,
+        seller: "Ensuredit Technologies"
       });
     }
   };

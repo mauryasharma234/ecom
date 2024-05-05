@@ -10,11 +10,14 @@ const ProductItem = ({ product }) => {
     console.log("Maurya product", product)
   }, [])
   const addToCartHandler = () => {
+    console.log("Maurya product", product)
     addItemToCart({
       product: product._id,
       name: product.name,
       price: product.price,
-      image: product.images[0].url,
+      // image: product.images[0].url == url ? "/public/images/default_product.png" : product.images[0].url,
+      // image: product.images ? product.images[0].url : "/public/images/default_product.png",
+      image: product.images.length > 0 ? product.images[0].url : "/images/default_product.png",
       stock: product.stock,
       seller: product.seller,
     });
@@ -35,7 +38,7 @@ const ProductItem = ({ product }) => {
               src={
                 product?.images[0]
                   ? product?.images[0].url
-                  : "/public/images/default_product.png"
+                  : "/images/default_product.png"
               }
               alt="Product Image"
               height="240"
