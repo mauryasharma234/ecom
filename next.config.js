@@ -4,7 +4,7 @@ const nextConfig = {
     appDir: true,
   },
   env: {
-    API_URL: "http://localhost:3000",
+    API_URL: "https://cb27-2400-80c0-200f-8bc-440e-5781-fc74-7955.ngrok-free.app",
     DB_URI: "mongodb://localhost:27017/buyitnow",
 
     CLOUD_NAME: "dmzvvpjej",
